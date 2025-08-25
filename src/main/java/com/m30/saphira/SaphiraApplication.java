@@ -9,5 +9,4 @@ public class SaphiraApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SaphiraApplication.class, args);
 	}
-
 }
