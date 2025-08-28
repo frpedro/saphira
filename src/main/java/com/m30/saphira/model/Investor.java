@@ -1,13 +1,11 @@
 package com.m30.saphira.model;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
+import lombok.NoArgsConstructor;
 import java.util.UUID;
 
-// lombok
+@NoArgsConstructor
 @Getter
-@Setter
 
 // table
 @Entity
