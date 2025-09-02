@@ -22,4 +22,5 @@ public interface InvestorRepository extends JpaRepository<Investor, UUID> {
     @Query("SELECT DISTINCT i.investidor FROM Investment i WHERE i.valorAplicado > :valor")
     List<Investor> findByInvestidorQualificado (double valor);
 
+    boolean existsByEmail(String email);
 }

@@ -2,10 +2,13 @@ package com.m30.saphira.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
+@Setter
 
 // table
 @Entity

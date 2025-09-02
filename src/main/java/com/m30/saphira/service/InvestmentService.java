@@ -31,8 +31,10 @@ public class InvestmentService {
         Investor investidor = investorRepository.findByNome(nome)
                     .orElseThrow(() -> new InvalidInvestmentException("Investidor não encontrado"));
 
-        // cria um novo objeto de investimento e preenche os dados
+        // cria um novo objeto de investimento
         Investment investment = new Investment();
+
+        //preenche os dados
         investment.setAtivo(ativo);
         investment.setValorAplicado(valorAplicado);
         investment.setDataAplicacao(LocalDate.now());
