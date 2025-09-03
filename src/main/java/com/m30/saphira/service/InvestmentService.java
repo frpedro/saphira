@@ -7,6 +7,7 @@ import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestmentRepository;
 import com.m30.saphira.repository.InvestorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,8 +20,8 @@ import java.util.UUID;
 public class InvestmentService {
 
     // referência para os repositórios
-    private InvestmentRepository investmentRepository;
-    private InvestorRepository investorRepository;
+    private final InvestmentRepository investmentRepository;
+    private final InvestorRepository investorRepository;
 
     // cria um novo investimento
     public InvestmentDTO createInvestment(String nome, String ativo, double valorAplicado) {
@@ -46,7 +47,7 @@ public class InvestmentService {
         // persiste / salva no banco de dados
         investmentRepository.save(investment);
 
-        // retorna o resultado
+        // retorna resultado da criação
         return new InvestmentDTO(investidor.getNome(), ativo, valorAplicado);
 
     }
@@ -64,6 +65,41 @@ public class InvestmentService {
     // busca investimento por ativo
     public List<Investment> buscaInvestimentosPorAtivo(String ativo) {
         return investmentRepository.findByAtivo(ativo);
+    }
+
+    // atualiza investimento
+    public InvestmentDTO atualizarInvestimento (UUID id, InvestmentDTO investmentDTO) {
+
+        // valida se existe
+        Investment investimentoExistente = investmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Investimento não encontrado"));
+
+        // seta novos dados atualizados
+        investimentoExistente.setAtivo(investmentDTO.getAtivo());
+        investimentoExistente.setValorAplicado(investmentDTO.getValorAplicado());
+        investimentoExistente.setDataAplicacao(LocalDate.now());
+
+        // salva objeto atualizado no banco
+        Investment investimentoAtualizado = investmentRepository.save(investimentoExistente);
+
+        // retorna resultado da atualização
+        return new InvestmentDTO(
+                investimentoAtualizado.getInvestidor().getNome(),
+                investimentoAtualizado.getAtivo(),
+                investimentoAtualizado.getValorAplicado()
+        );
+    }
+
+    // exclui investimento
+    public void  excluirInvestimento (UUID id) {
+
+        // valida se existe
+        if(!investmentRepository.existsById(id)) {
+            throw new RuntimeException("Investimento não encontrado");
+        }
+
+        // deleta do banco
+        investmentRepository.deleteById(id);
     }
 
 }
