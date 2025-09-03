@@ -10,7 +10,9 @@ public interface InvestmentRepository extends JpaRepository<Investment, UUID> {
     // busca investimentos de um investidor
     List<Investment> findByInvestidor_Id(UUID investidor);
 
-    // busca investidores de um ativo
+    // busca investimentos por ativo
     List<Investment> findByAtivo(String ativo);
+
+
 
 }

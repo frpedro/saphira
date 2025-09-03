@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -47,5 +50,21 @@ public class InvestmentService {
         return new InvestmentDTO(investidor.getNome(), ativo, valorAplicado);
 
     }
+
+    // lista todos investimentos
+    public List<Investment> listarTodosInvestimentos() {
+        return investmentRepository.findAll();
+    }
+
+    // lista investimentos filtrados por investidor
+    public List<Investment> buscaInvestimentosPorInvestidor(UUID investidor) {
+        return investmentRepository.findByInvestidor_Id(investidor);
+    }
+
+    // busca investimento por ativo
+    public List<Investment> buscaInvestimentosPorAtivo(String ativo) {
+        return investmentRepository.findByAtivo(ativo);
+    }
+
 }
 

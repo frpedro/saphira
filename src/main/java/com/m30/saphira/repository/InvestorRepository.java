@@ -9,11 +9,11 @@ import java.util.UUID;
 
 public interface InvestorRepository extends JpaRepository<Investor, UUID> {
 
+    // busca investidor por id
+    Optional<Investor> findById (UUID id);
+
     // busca investidor pelo nome
     Optional<Investor> findByNome (String nome);
-
-    // busca investidor pelo email
-    Optional<Investor> findByEmail (String email);
 
     // busca investidor por tipo de perfil
     List<Investor> findByPerfilInvestidor (Investor.PerfilInvestidor perfilInvestidor);
