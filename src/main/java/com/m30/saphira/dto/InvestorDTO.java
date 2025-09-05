@@ -1,9 +1,8 @@
 package com.m30.saphira.dto;
 
+import com.m30.saphira.model.Investor;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @Getter
@@ -20,5 +19,12 @@ public class InvestorDTO {
     private String email;
 
     @NotNull
-    private Enum perfilInvestidor;
+    private Investor.PerfilInvestidor perfilInvestidor;
+
+    public InvestorDTO(Investor investor) {
+        this.nome = investor.getNome();
+        this.email = investor.getEmail();
+        this.perfilInvestidor = investor.getPerfilInvestidor();
+    }
+
 }

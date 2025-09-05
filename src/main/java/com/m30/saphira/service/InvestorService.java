@@ -1,13 +1,10 @@
 package com.m30.saphira.service;
-import com.m30.saphira.dto.InvestmentDTO;
 import com.m30.saphira.dto.InvestorDTO;
-import com.m30.saphira.model.Investment;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,19 +51,19 @@ public class InvestorService {
     }
 
     //busca investidor por id
-    public Investor buscaInvestidorPorId(UUID id) {
+    public Investor listarInvestidorPorId(UUID id) {
         Optional<Investor> optionalInvestor = investorRepository.findById(id);
         return optionalInvestor.orElseThrow(() -> new RuntimeException("Investidor não encontrado"));
     }
 
     // busca investidor por nome
-    public Investor buscaInvestidorPorNome(String nome) {
+    public Investor listarInvestidorPorNome(String nome) {
         Optional<Investor> optionalInvestor = investorRepository.findByNome(nome);
         return optionalInvestor.orElseThrow(() -> new RuntimeException("Investidor não encontrado"));
     }
 
     // atualiza dados do investidor
-    public InvestorDTO atualizarInvestidor (UUID id, Investor.PerfilInvestidor perfilInvestidor, InvestorDTO investorDTO) {
+    public InvestorDTO atualizarInvestidor (UUID id, InvestorDTO investorDTO) {
 
         // valida se existe
         Investor investidorExistente = investorRepository.findById(id)
@@ -75,7 +72,7 @@ public class InvestorService {
         // seta novos dados atualizados
         investidorExistente.setNome(investorDTO.getNome());
         investidorExistente.setEmail(investorDTO.getEmail());
-        investidorExistente.setPerfilInvestidor(perfilInvestidor);
+        investidorExistente.setPerfilInvestidor(investorDTO.getPerfilInvestidor());
 
         // salva objeto atualizado no banco
         Investor investidorAtualizado = investorRepository.save(investidorExistente);
