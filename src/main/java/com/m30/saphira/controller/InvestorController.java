@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 // cria os construtores necessários
 @RequiredArgsConstructor
 
-// declara que é controller e define rota
+// indica que a classe é controller e define rota
 @RestController
 @RequestMapping("/investidor")
 public class InvestorController {
