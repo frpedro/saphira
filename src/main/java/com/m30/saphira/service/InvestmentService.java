@@ -1,13 +1,11 @@
 package com.m30.saphira.service;
 import com.m30.saphira.dto.InvestmentDTO;
-import com.m30.saphira.dto.InvestorDTO;
 import com.m30.saphira.exception.InvalidInvestmentException;
 import com.m30.saphira.model.Investment;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestmentRepository;
 import com.m30.saphira.repository.InvestorRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,23 +22,18 @@ public class InvestmentService {
     private final InvestorRepository investorRepository;
 
     // cria um novo investimento
-    public InvestmentDTO createInvestment(String nome, String ativo, double valorAplicado) {
-
-        // valida se os campos estão preechidos corretamente
-        if (nome == null || nome.isBlank() || ativo == null || ativo.isBlank() || valorAplicado <= 0) {
-            throw new InvalidInvestmentException("Valores inválidos para criar investimento");
-        }
+    public InvestmentDTO createInvestment(InvestmentDTO dto) {
 
         // busca investidor pelo nome e lança exeção se não existir
-        Investor investidor = investorRepository.findByNome(nome)
+        Investor investidor = investorRepository.findById(dto.getInvestorId())
                     .orElseThrow(() -> new InvalidInvestmentException("Investidor não encontrado"));
 
         // cria um novo objeto de investimento
         Investment investment = new Investment();
 
         //preenche os dados
-        investment.setAtivo(ativo);
-        investment.setValorAplicado(valorAplicado);
+        investment.setAtivo(dto.getAtivo());
+        investment.setValorAplicado(dto.getValorAplicado());
         investment.setDataAplicacao(LocalDate.now());
         investment.setInvestidor(investidor);
 
@@ -48,7 +41,7 @@ public class InvestmentService {
         investmentRepository.save(investment);
 
         // retorna resultado da criação
-        return new InvestmentDTO(investidor.getNome(), ativo, valorAplicado);
+        return new InvestmentDTO(investidor.getId(), dto.getAtivo(), dto.getValorAplicado());
 
     }
 
@@ -84,7 +77,7 @@ public class InvestmentService {
 
         // retorna resultado da atualização
         return new InvestmentDTO(
-                investimentoAtualizado.getInvestidor().getNome(),
+                investimentoAtualizado.getInvestidor().getId(),
                 investimentoAtualizado.getAtivo(),
                 investimentoAtualizado.getValorAplicado()
         );

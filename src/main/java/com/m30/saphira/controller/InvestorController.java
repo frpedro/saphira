@@ -1,9 +1,8 @@
 package com.m30.saphira.controller;
-
 import com.m30.saphira.dto.InvestorDTO;
 import com.m30.saphira.model.Investor;
-import com.m30.saphira.repository.InvestorRepository;
 import com.m30.saphira.service.InvestorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,7 @@ public class InvestorController {
 
     // rota post para criar novo investidor
     @PostMapping
-    public ResponseEntity<InvestorDTO> criarInvestidor(@RequestBody InvestorDTO dto) {
+    public ResponseEntity<InvestorDTO> criarInvestidor(@Valid @RequestBody InvestorDTO dto) {
         // cria novo investidor
         InvestorDTO novoInvestidor = investorService.criarInvestidor(dto.getPerfilInvestidor(), dto);
 
@@ -117,7 +116,7 @@ public class InvestorController {
         investorService.excluirInvestidor(id);
 
         // retorna resultado com mensagem
-        return ResponseEntity.ok("O investidor foi excluido com sucesso");
+        return ResponseEntity.ok("Investidor excluido com sucesso");
     }
 
 }
