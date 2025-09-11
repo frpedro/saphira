@@ -1,17 +1,16 @@
 package com.m30.saphira.controller;
-
 import com.m30.saphira.dto.InvestorDTO;
 import com.m30.saphira.model.Investor;
-import com.m30.saphira.repository.InvestorRepository;
 import com.m30.saphira.service.InvestorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
+
 
 // cria os construtores necessários
 @RequiredArgsConstructor
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 // indica que a classe é controller e define rota
 @RestController
 @RequestMapping("/investidor")
+@Validated
 public class InvestorController {
 
     // referencia para service
@@ -26,7 +26,8 @@ public class InvestorController {
 
     // rota post para criar novo investidor
     @PostMapping
-    public ResponseEntity<InvestorDTO> criarInvestidor(@RequestBody InvestorDTO dto) {
+    public ResponseEntity<InvestorDTO> criarInvestidor(@Valid @RequestBody InvestorDTO dto) {
+
         // cria novo investidor
         InvestorDTO novoInvestidor = investorService.criarInvestidor(dto.getPerfilInvestidor(), dto);
 
@@ -39,68 +40,48 @@ public class InvestorController {
     public ResponseEntity<List<InvestorDTO>> listarTodosInvestidores() {
 
         // lista todos investidores
-        List<Investor> todosInvestidores = investorService.listarTodosInvestidores();
-
-        // converte model para dto
-        List<InvestorDTO> todosInvestidoresDTO = todosInvestidores.stream()
-                .map(investor -> new InvestorDTO(
-                        investor.getNome(),
-                        investor.getEmail(),
-                        investor.getPerfilInvestidor()
-                ))
-                .collect(Collectors.toList());
+        List<InvestorDTO> todosInvestidores = investorService.listarTodosInvestidores();
 
         // retorna o resultado
-        return new ResponseEntity<>(todosInvestidoresDTO, HttpStatus.OK);
+        return new ResponseEntity<>(todosInvestidores, HttpStatus.OK);
     }
 
     // rota get para procurar investidor especifico por id
     @GetMapping("/buscar/id/{id}")
-    public ResponseEntity<InvestorDTO> procurarInvestidorId(@PathVariable UUID id) {
+    public ResponseEntity<InvestorDTO> procurarInvestidorId(@Valid @PathVariable UUID id) {
 
         // busca investidor
-        Investor investidorEncontrado = investorService.listarInvestidorPorId(id);
-
-        // converte model para dto
-        InvestorDTO investidorEncontradoDTO = new InvestorDTO(investidorEncontrado);
+        InvestorDTO investidorEncontrado = investorService.listarInvestidorPorId(id);
 
         // retorna resultado
-        return ResponseEntity.ok(investidorEncontradoDTO);
+        return ResponseEntity.ok(investidorEncontrado);
     }
 
     // rota get para procurar investidor especifico por nome
     @GetMapping("/buscar/nome/{nome}")
-    public ResponseEntity<InvestorDTO> procurarInvestidorNome(@PathVariable String nome) {
+    public ResponseEntity<InvestorDTO> procurarInvestidorPorNome(@Valid @PathVariable String nome) {
 
         // busca investidor
-        Investor investidorEncontrado = investorService.listarInvestidorPorNome(nome);
-
-        // converte model para dto
-        InvestorDTO investidorEncontradoDTO = new InvestorDTO(investidorEncontrado);
+        InvestorDTO investidorEncontrado = investorService.listarInvestidorPorNome(nome);
 
         // retorna resultado
-        return ResponseEntity.ok(investidorEncontradoDTO);
+        return ResponseEntity.ok(investidorEncontrado);
     }
 
     // rota get para procurar investidores especificos por perfil
     @GetMapping("/buscar/perfil/{perfil}")
-    public ResponseEntity<List<InvestorDTO>> procurarInvestidorPerfil(@PathVariable Investor.PerfilInvestidor perfil) {
+    public ResponseEntity<List<InvestorDTO>> procurarInvestidorPerfil(@Valid @PathVariable Investor.PerfilInvestidor perfil) {
 
         // busca investidores
-        List<Investor> investidoresEncontrados = investorService.listarInvestidoresPorPefil(perfil);
-
-        // converte model para dto
-        List<InvestorDTO> investidoresDTO = investidoresEncontrados.stream()
-                .map(InvestorDTO::new)
-                .toList();
+        List<InvestorDTO> investidoresEncontrados = investorService.listarInvestidoresPorPefil(perfil);
 
         // retorna resultado
-        return ResponseEntity.ok(investidoresDTO);
+        return ResponseEntity.ok(investidoresEncontrados);
     }
 
     // rota put para atualizar dados de um investidor
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<InvestorDTO> atualizarInvestidor(@PathVariable UUID id, @RequestBody InvestorDTO investorDTO) {
+    public ResponseEntity<InvestorDTO> atualizarInvestidor(@PathVariable UUID id, @Valid @RequestBody InvestorDTO investorDTO) {
 
         // atualiza dados
         InvestorDTO investidorAtualizado = investorService.atualizarInvestidor(id, investorDTO);
@@ -111,13 +92,13 @@ public class InvestorController {
 
     // rota delete para deletar um investidor
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> deletarInvestidor(@PathVariable UUID id) {
+    public ResponseEntity<String> deletarInvestidor(@Valid @PathVariable UUID id) {
 
         // exclui investidor
         investorService.excluirInvestidor(id);
 
         // retorna resultado com mensagem
-        return ResponseEntity.ok("O investidor foi excluido com sucesso");
+        return ResponseEntity.ok("Investidor excluido com sucesso");
     }
 
 }

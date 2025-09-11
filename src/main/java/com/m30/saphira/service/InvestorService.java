@@ -1,5 +1,7 @@
 package com.m30.saphira.service;
+import com.m30.saphira.dto.InvestmentDTO;
 import com.m30.saphira.dto.InvestorDTO;
+import com.m30.saphira.model.Investment;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestorRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -41,25 +44,55 @@ public class InvestorService {
     }
 
     // lista todos investidores
-    public List<Investor> listarTodosInvestidores() {
-        return investorRepository.findAll();
+    public List<InvestorDTO> listarTodosInvestidores() {
+
+        List<Investor> todosInvestidores = investorRepository.findAll();
+
+        return todosInvestidores.stream()
+                .map(this::dtoConverter)
+                .collect(Collectors.toList());
+    }
+
+    // converte model da classe acima para dto
+    private InvestorDTO dtoConverter(Investor investor) {
+        return new InvestorDTO(
+                investor.getNome(),
+                investor.getEmail(),
+                investor.getPerfilInvestidor()
+        );
     }
 
     // lista investidores por perfil
-    public List<Investor> listarInvestidoresPorPefil(Investor.PerfilInvestidor perfil) {
-        return investorRepository.findByPerfilInvestidor(perfil);
+    public List<InvestorDTO> listarInvestidoresPorPefil(Investor.PerfilInvestidor perfil) {
+
+        List<Investor> investidoresPorPerfil = investorRepository.findByPerfilInvestidor(perfil);
+
+        return investidoresPorPerfil.stream()
+                .map(this::dtoConverter)
+                .collect(Collectors.toList());
     }
 
     //busca investidor por id
-    public Investor listarInvestidorPorId(UUID id) {
+    public InvestorDTO listarInvestidorPorId(UUID id) {
+
         Optional<Investor> optionalInvestor = investorRepository.findById(id);
-        return optionalInvestor.orElseThrow(() -> new RuntimeException("Investidor não encontrado"));
+
+        Investor investor = optionalInvestor.orElseThrow(() ->
+                new RuntimeException("Investidor não encontrado"));
+
+        return dtoConverter(investor);
     }
 
     // busca investidor por nome
-    public Investor listarInvestidorPorNome(String nome) {
+    public InvestorDTO listarInvestidorPorNome(String nome) {
+
         Optional<Investor> optionalInvestor = investorRepository.findByNome(nome);
-        return optionalInvestor.orElseThrow(() -> new RuntimeException("Investidor não encontrado"));
+
+        Investor investor = optionalInvestor.orElseThrow(() ->
+                new RuntimeException("Investidor " + nome + " não encontrado"));
+
+        return dtoConverter(investor);
+
     }
 
     // atualiza dados do investidor
