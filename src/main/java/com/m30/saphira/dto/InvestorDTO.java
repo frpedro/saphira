@@ -12,14 +12,14 @@ public class InvestorDTO {
     @NotBlank(message = "Nome é um campo obrigatório")
     @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]+$", message = "Nome só pode conter letras e espaços")
     @Size(min = 3, max = 50, message = "Nome inválido")
-    private String nome;
+    private final String nome;
 
     @NotBlank(message = "Email é um campo obrigatório")
     @Email(message = "Formato de email inválido")
-    private String email;
+    private final String email;
 
     @NotNull
-    private Investor.PerfilInvestidor perfilInvestidor;
+    private final Investor.PerfilInvestidor perfilInvestidor;
 
     public InvestorDTO(Investor investor) {
         this.nome = investor.getNome();

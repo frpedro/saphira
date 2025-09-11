@@ -4,6 +4,7 @@ import com.m30.saphira.model.Investment;
 import com.m30.saphira.service.InvestmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class InvestmentController {
 
     // referencia para service
+    @Autowired
     private final InvestmentService investmentService;
 
     // rota post para criar novo investimento

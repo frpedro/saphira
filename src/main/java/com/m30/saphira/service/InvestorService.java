@@ -1,6 +1,8 @@
 package com.m30.saphira.service;
 import com.m30.saphira.dto.InvestmentDTO;
 import com.m30.saphira.dto.InvestorDTO;
+import com.m30.saphira.exception.DataConflitException;
+import com.m30.saphira.exception.ResourceNotFound;
 import com.m30.saphira.model.Investment;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestorRepository;
@@ -24,7 +26,7 @@ public class InvestorService {
 
         // valida se o email cadastrado já existe
         if(investorRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new DataConflitException("O email " + dto.getEmail() + " já está em uso.");
         }
 
         // cria novo objeto de investidor
@@ -78,7 +80,7 @@ public class InvestorService {
         Optional<Investor> optionalInvestor = investorRepository.findById(id);
 
         Investor investor = optionalInvestor.orElseThrow(() ->
-                new RuntimeException("Investidor não encontrado"));
+                new ResourceNotFound("Investidor(a) não encontrado."));
 
         return dtoConverter(investor);
     }
@@ -89,7 +91,7 @@ public class InvestorService {
         Optional<Investor> optionalInvestor = investorRepository.findByNome(nome);
 
         Investor investor = optionalInvestor.orElseThrow(() ->
-                new RuntimeException("Investidor " + nome + " não encontrado"));
+                new ResourceNotFound("Investidor(a) " + nome + " não encontrado."));
 
         return dtoConverter(investor);
 
@@ -100,7 +102,12 @@ public class InvestorService {
 
         // valida se existe
         Investor investidorExistente = investorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Este investidor não existe"));
+                .orElseThrow(() -> new ResourceNotFound("Investidor(a) não encontrado"));
+
+        // valida se o email adicionado já existe
+        if(!investidorExistente.getEmail().equals(investorDTO.getEmail()) && investorRepository.existsByEmail(investorDTO.getEmail())) {
+            throw new DataConflitException("O email " + investorDTO.getEmail() + " já está em uso.");
+        }
 
         // seta novos dados atualizados
         investidorExistente.setNome(investorDTO.getNome());
@@ -123,7 +130,7 @@ public class InvestorService {
 
         // valida se existe
         if(!investorRepository.existsById(id)) {
-            throw new RuntimeException("Investidor não existe");
+            throw new ResourceNotFound("Investidor(a) não encontrado");
         }
 
         // deleta do banco
