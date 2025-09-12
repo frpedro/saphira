@@ -1,14 +1,11 @@
 package com.m30.saphira.service;
-import com.m30.saphira.dto.InvestmentDTO;
 import com.m30.saphira.dto.InvestorDTO;
-import com.m30.saphira.exception.DataConflitException;
-import com.m30.saphira.exception.ResourceNotFound;
-import com.m30.saphira.model.Investment;
+import com.m30.saphira.exception.DataConflictException;
+import com.m30.saphira.exception.ResourceNotFoundException;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +23,7 @@ public class InvestorService {
 
         // valida se o email cadastrado já existe
         if(investorRepository.existsByEmail(dto.getEmail())) {
-            throw new DataConflitException("O email " + dto.getEmail() + " já está em uso.");
+            throw new DataConflictException("O email " + dto.getEmail() + " já está em uso.");
         }
 
         // cria novo objeto de investidor
@@ -51,12 +48,12 @@ public class InvestorService {
         List<Investor> todosInvestidores = investorRepository.findAll();
 
         return todosInvestidores.stream()
-                .map(this::dtoConverter)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
     // converte model da classe acima para dto
-    private InvestorDTO dtoConverter(Investor investor) {
+    private InvestorDTO convertToDTO(Investor investor) {
         return new InvestorDTO(
                 investor.getNome(),
                 investor.getEmail(),
@@ -70,7 +67,7 @@ public class InvestorService {
         List<Investor> investidoresPorPerfil = investorRepository.findByPerfilInvestidor(perfil);
 
         return investidoresPorPerfil.stream()
-                .map(this::dtoConverter)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -80,9 +77,9 @@ public class InvestorService {
         Optional<Investor> optionalInvestor = investorRepository.findById(id);
 
         Investor investor = optionalInvestor.orElseThrow(() ->
-                new ResourceNotFound("Investidor(a) não encontrado."));
+                new ResourceNotFoundException("Investidor(a) com ID " + id + " não encontrado"));
 
-        return dtoConverter(investor);
+        return convertToDTO(investor);
     }
 
     // busca investidor por nome
@@ -91,9 +88,9 @@ public class InvestorService {
         Optional<Investor> optionalInvestor = investorRepository.findByNome(nome);
 
         Investor investor = optionalInvestor.orElseThrow(() ->
-                new ResourceNotFound("Investidor(a) " + nome + " não encontrado."));
+                new ResourceNotFoundException("Investidor(a) " + nome + " não encontrado."));
 
-        return dtoConverter(investor);
+        return convertToDTO(investor);
 
     }
 
@@ -102,11 +99,11 @@ public class InvestorService {
 
         // valida se existe
         Investor investidorExistente = investorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("Investidor(a) não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Investidor(a) com ID " + id + " não encontrado"));
 
         // valida se o email adicionado já existe
         if(!investidorExistente.getEmail().equals(investorDTO.getEmail()) && investorRepository.existsByEmail(investorDTO.getEmail())) {
-            throw new DataConflitException("O email " + investorDTO.getEmail() + " já está em uso.");
+            throw new DataConflictException("O email " + investorDTO.getEmail() + " já está em uso.");
         }
 
         // seta novos dados atualizados
@@ -129,12 +126,11 @@ public class InvestorService {
     public void excluirInvestidor (UUID id) {
 
         // valida se existe
-        if(!investorRepository.existsById(id)) {
-            throw new ResourceNotFound("Investidor(a) não encontrado");
-        }
+        Investor investor = investorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Investidor(a) com ID " + id + " não encontrado"));
 
         // deleta do banco
-        investorRepository.deleteById(id);
+        investorRepository.delete(investor);
     }
 
 }

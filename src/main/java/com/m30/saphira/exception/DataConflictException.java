@@ -3,11 +3,12 @@ package com.m30.saphira.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFound extends RuntimeException {
+@ResponseStatus(HttpStatus.CONFLICT)
+public class DataConflictException extends RuntimeException {
 
-    public ResourceNotFound(String message) {
+    public DataConflictException(String message) {
         super(message);
     }
 
 }
+

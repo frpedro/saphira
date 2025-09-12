@@ -1,6 +1,6 @@
 package com.m30.saphira.service;
 import com.m30.saphira.dto.InvestmentDTO;
-import com.m30.saphira.exception.InvalidInvestmentException;
+import com.m30.saphira.exception.ResourceNotFoundException;
 import com.m30.saphira.model.Investment;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestmentRepository;
@@ -25,7 +25,7 @@ public class InvestmentService {
 
         // busca investidor pelo nome e lança exeção se não existir
         Investor investidor = investorRepository.findById(dto.getInvestorId())
-                    .orElseThrow(() -> new InvalidInvestmentException("Investidor não encontrado"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Investidor " + dto.getInvestorId() + " não encontrado."));
 
         // cria um novo objeto de investimento
         Investment investment = new Investment();
@@ -50,12 +50,12 @@ public class InvestmentService {
         List<Investment> todosInvestimentos = investmentRepository.findAll();
 
         return todosInvestimentos.stream()
-                .map(this::dtoConverter)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
         }
 
     // converte model da classe acima para dto
-    private InvestmentDTO dtoConverter(Investment investment) {
+    private InvestmentDTO convertToDTO(Investment investment) {
         return new InvestmentDTO(
                 investment.getInvestidor().getId(),
                 investment.getAtivo(),
@@ -69,7 +69,7 @@ public class InvestmentService {
         List<Investment> investimentosDoInvestidor = investmentRepository.findByInvestidor_Id(investidor);
 
         return investimentosDoInvestidor.stream()
-                .map(this::dtoConverter)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -79,7 +79,7 @@ public class InvestmentService {
         List<Investment> investidoresPorAtivo = investmentRepository.findByAtivo(ativo);
 
         return investidoresPorAtivo.stream()
-                .map(this::dtoConverter)
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
@@ -88,7 +88,7 @@ public class InvestmentService {
 
         // valida se existe
         Investment investimentoExistente = investmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Investimento não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Investimento " + id + " não encontrado."));
 
         // seta novos dados atualizados
         investimentoExistente.setAtivo(investmentDTO.getAtivo());
@@ -110,9 +110,8 @@ public class InvestmentService {
     public void  excluirInvestimento (UUID id) {
 
         // valida se existe
-        if(!investmentRepository.existsById(id)) {
-            throw new RuntimeException("Investimento não encontrado");
-        }
+        Investment investimento = investmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Investimento " + id + " não encontrado."));
 
         // deleta do banco
         investmentRepository.deleteById(id);
