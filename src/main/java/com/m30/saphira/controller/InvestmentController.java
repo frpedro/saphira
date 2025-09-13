@@ -2,6 +2,7 @@ package com.m30.saphira.controller;
 import com.m30.saphira.dto.InvestmentDTO;
 import com.m30.saphira.model.Investment;
 import com.m30.saphira.service.InvestmentService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +32,7 @@ public class InvestmentController {
 
     // rota post para criar novo investimento
     @PostMapping
+    @Operation(description = "Cria um novo investimento para o investidor.")
     public ResponseEntity<InvestmentDTO> criarInvestimento (@Parameter @Valid @RequestBody InvestmentDTO dto) {
 
         // cria novo investimento
@@ -42,6 +44,7 @@ public class InvestmentController {
 
     // rota get para listar todos investimentos
     @GetMapping("/todos")
+    @Operation(description = "Lista todos investimentos do sistema.")
     public ResponseEntity<List<InvestmentDTO>> listarTodosInvestimentos() {
         
         // cria investimento
@@ -53,6 +56,7 @@ public class InvestmentController {
 
     // rota get para listar investimentos de um investidor
     @GetMapping("/ativos/investidor")
+    @Operation(description = "Lista todos investimentos do investidor.")
     public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorInvestidor(@Parameter @PathVariable UUID investidor) {
 
         // busca investimentos do investidor
@@ -64,6 +68,7 @@ public class InvestmentController {
 
     // rota get para listar ativo especifico
     @GetMapping("/ativos/{ativo}")
+    @Operation(description = "Lista todos os investimentos realizados em um determinado ativo.")
     public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorAtivo(@Parameter @Valid @PathVariable String ativo) {
 
         // busca ativo
@@ -75,6 +80,7 @@ public class InvestmentController {
 
     // rota put para atualizar investimento
     @PutMapping("/update/{id}")
+    @Operation(description = "Atualiza um investimento do investidor.")
     public ResponseEntity<InvestmentDTO> atualizarInvestimento(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestmentDTO dto) {
 
         // atualiza investimento
@@ -86,6 +92,7 @@ public class InvestmentController {
 
     // rota delete para deletar investimento
     @DeleteMapping("delete/{id}")
+    @Operation(description = "Deleta um investimento do investidor.")
     public ResponseEntity<String> deletarInvestimento(@Parameter @PathVariable UUID id) {
 
         // exclui investimento

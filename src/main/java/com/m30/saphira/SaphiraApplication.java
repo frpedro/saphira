@@ -10,3 +10,4 @@ public class SaphiraApplication {
 		SpringApplication.run(SaphiraApplication.class, args);
 	}
 }
+

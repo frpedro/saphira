@@ -1,10 +1,12 @@
 package com.m30.saphira.model;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -25,7 +27,7 @@ public class Investment {
     private double valorAplicado;
 
     @Column(name = "data_aplicacao")
-    private LocalDate dataAplicacao;
+    private LocalDateTime dataAplicacao;
 
     @Column
     private String ativo;
