@@ -1,6 +1,9 @@
 package com.m30.saphira.controller;
+import com.m30.saphira.config.apiresponse.DeleteResponses;
+import com.m30.saphira.config.apiresponse.GetResponses;
+import com.m30.saphira.config.apiresponse.PostResponses;
+import com.m30.saphira.config.apiresponse.PutResponses;
 import com.m30.saphira.dto.InvestmentDTO;
-import com.m30.saphira.model.Investment;
 import com.m30.saphira.service.InvestmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 // cria os construtores necessários
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class InvestmentController {
 
     // rota post para criar novo investimento
     @PostMapping
+    @PostResponses // pacote de respostas http possiveis dentro dessa rota
     @Operation(description = "Cria um novo investimento para o investidor.")
     public ResponseEntity<InvestmentDTO> criarInvestimento (@Parameter @Valid @RequestBody InvestmentDTO dto) {
 
@@ -44,6 +47,7 @@ public class InvestmentController {
 
     // rota get para listar todos investimentos
     @GetMapping("/todos")
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
     @Operation(description = "Lista todos investimentos do sistema.")
     public ResponseEntity<List<InvestmentDTO>> listarTodosInvestimentos() {
         
@@ -56,6 +60,7 @@ public class InvestmentController {
 
     // rota get para listar investimentos de um investidor
     @GetMapping("/ativos/investidor")
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
     @Operation(description = "Lista todos investimentos do investidor.")
     public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorInvestidor(@Parameter @PathVariable UUID investidor) {
 
@@ -68,6 +73,7 @@ public class InvestmentController {
 
     // rota get para listar ativo especifico
     @GetMapping("/ativos/{ativo}")
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
     @Operation(description = "Lista todos os investimentos realizados em um determinado ativo.")
     public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorAtivo(@Parameter @Valid @PathVariable String ativo) {
 
@@ -80,6 +86,7 @@ public class InvestmentController {
 
     // rota put para atualizar investimento
     @PutMapping("/update/{id}")
+    @PutResponses // pacote de respostas http possiveis dentro dessa rota
     @Operation(description = "Atualiza um investimento do investidor.")
     public ResponseEntity<InvestmentDTO> atualizarInvestimento(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestmentDTO dto) {
 
@@ -92,6 +99,7 @@ public class InvestmentController {
 
     // rota delete para deletar investimento
     @DeleteMapping("delete/{id}")
+    @DeleteResponses // pacote de respostas http possiveis dentro dessa rota
     @Operation(description = "Deleta um investimento do investidor.")
     public ResponseEntity<String> deletarInvestimento(@Parameter @PathVariable UUID id) {
 
