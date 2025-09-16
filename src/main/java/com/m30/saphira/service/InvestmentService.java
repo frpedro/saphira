@@ -8,6 +8,7 @@ import com.m30.saphira.repository.InvestorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class InvestmentService {
         //preenche os dados
         investment.setAtivo(dto.getAtivo());
         investment.setValorAplicado(dto.getValorAplicado());
-        investment.setDataAplicacao(LocalDate.now());
+        investment.setDataAplicacao(LocalDateTime.now());
         investment.setInvestidor(investidor);
 
         // persiste / salva no banco de dados
@@ -93,7 +94,7 @@ public class InvestmentService {
         // seta novos dados atualizados
         investimentoExistente.setAtivo(investmentDTO.getAtivo());
         investimentoExistente.setValorAplicado(investmentDTO.getValorAplicado());
-        investimentoExistente.setDataAplicacao(LocalDate.now());
+        investimentoExistente.setDataAplicacao(LocalDateTime.now());
 
         // salva objeto atualizado no banco
         Investment investimentoAtualizado = investmentRepository.save(investimentoExistente);

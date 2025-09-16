@@ -1,12 +1,18 @@
 package com.m30.saphira.controller;
+import com.m30.saphira.config.apiresponse.DeleteResponses;
+import com.m30.saphira.config.apiresponse.GetResponses;
+import com.m30.saphira.config.apiresponse.PostResponses;
+import com.m30.saphira.config.apiresponse.PutResponses;
 import com.m30.saphira.dto.InvestorDTO;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.service.InvestorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +24,7 @@ import java.util.UUID;
 // indica que a classe é controller e define rota
 @RestController
 @RequestMapping("/investidor")
-@Validated
+@Tag(name = "Investidores")
 public class InvestorController {
 
     // referencia para service
@@ -26,7 +32,9 @@ public class InvestorController {
 
     // rota post para criar novo investidor
     @PostMapping
-    public ResponseEntity<InvestorDTO> criarInvestidor(@Valid @RequestBody InvestorDTO dto) {
+    @PostResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Cria um novo investidor")
+    public ResponseEntity<InvestorDTO> criarInvestidor(@Parameter @Valid @RequestBody InvestorDTO dto) {
 
         // cria novo investidor
         InvestorDTO novoInvestidor = investorService.criarInvestidor(dto.getPerfilInvestidor(), dto);
@@ -37,6 +45,8 @@ public class InvestorController {
 
     // rota get para listar todos investidores
     @GetMapping
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Lista todos investidores do sistema")
     public ResponseEntity<List<InvestorDTO>> listarTodosInvestidores() {
 
         // lista todos investidores
@@ -48,7 +58,9 @@ public class InvestorController {
 
     // rota get para procurar investidor especifico por id
     @GetMapping("/buscar/id/{id}")
-    public ResponseEntity<InvestorDTO> procurarInvestidorId(@Valid @PathVariable UUID id) {
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Busca investidor por ID")
+    public ResponseEntity<InvestorDTO> procurarInvestidorId(@Parameter @Valid @PathVariable UUID id) {
 
         // busca investidor
         InvestorDTO investidorEncontrado = investorService.listarInvestidorPorId(id);
@@ -59,7 +71,9 @@ public class InvestorController {
 
     // rota get para procurar investidor especifico por nome
     @GetMapping("/buscar/nome/{nome}")
-    public ResponseEntity<InvestorDTO> procurarInvestidorPorNome(@Valid @PathVariable String nome) {
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Busca investidor por nome")
+    public ResponseEntity<InvestorDTO> procurarInvestidorPorNome(@Parameter @Valid @PathVariable String nome) {
 
         // busca investidor
         InvestorDTO investidorEncontrado = investorService.listarInvestidorPorNome(nome);
@@ -70,7 +84,9 @@ public class InvestorController {
 
     // rota get para procurar investidores especificos por perfil
     @GetMapping("/buscar/perfil/{perfil}")
-    public ResponseEntity<List<InvestorDTO>> procurarInvestidorPerfil(@Valid @PathVariable Investor.PerfilInvestidor perfil) {
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Lista investidores por tipo de perfil de investidor")
+    public ResponseEntity<List<InvestorDTO>> procurarInvestidorPerfil(@Parameter @Valid @PathVariable Investor.PerfilInvestidor perfil) {
 
         // busca investidores
         List<InvestorDTO> investidoresEncontrados = investorService.listarInvestidoresPorPefil(perfil);
@@ -81,7 +97,9 @@ public class InvestorController {
 
     // rota put para atualizar dados de um investidor
     @PutMapping("/atualizar/{id}")
-    public ResponseEntity<InvestorDTO> atualizarInvestidor(@PathVariable UUID id, @Valid @RequestBody InvestorDTO investorDTO) {
+    @PutResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Atualiza um investidor")
+    public ResponseEntity<InvestorDTO> atualizarInvestidor(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestorDTO investorDTO) {
 
         // atualiza dados
         InvestorDTO investidorAtualizado = investorService.atualizarInvestidor(id, investorDTO);
@@ -92,7 +110,9 @@ public class InvestorController {
 
     // rota delete para deletar um investidor
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> deletarInvestidor(@Valid @PathVariable UUID id) {
+    @DeleteResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Deleta um investidor")
+    public ResponseEntity<String> deletarInvestidor(@Parameter @Valid @PathVariable UUID id) {
 
         // exclui investidor
         investorService.excluirInvestidor(id);

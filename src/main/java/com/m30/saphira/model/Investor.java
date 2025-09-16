@@ -33,9 +33,9 @@ public class Investor {
 
     // check
     public enum PerfilInvestidor {
-        CONSERVADOR,
-        MODERADO,
-        ARROJADO
+        conservador,
+        moderado,
+        arrojado
     }
 
 }

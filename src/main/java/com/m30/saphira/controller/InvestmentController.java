@@ -1,7 +1,13 @@
 package com.m30.saphira.controller;
+import com.m30.saphira.config.apiresponse.DeleteResponses;
+import com.m30.saphira.config.apiresponse.GetResponses;
+import com.m30.saphira.config.apiresponse.PostResponses;
+import com.m30.saphira.config.apiresponse.PutResponses;
 import com.m30.saphira.dto.InvestmentDTO;
-import com.m30.saphira.model.Investment;
 import com.m30.saphira.service.InvestmentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 // cria os construtores necessários
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/investimentos")
 @Validated
+@Tag(name = "Investimentos")
 public class InvestmentController {
 
     // referencia para service
@@ -28,7 +34,9 @@ public class InvestmentController {
 
     // rota post para criar novo investimento
     @PostMapping
-    public ResponseEntity<InvestmentDTO> criarInvestimento (@Valid @RequestBody InvestmentDTO dto) {
+    @PostResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Cria um novo investimento para o investidor.")
+    public ResponseEntity<InvestmentDTO> criarInvestimento (@Parameter @Valid @RequestBody InvestmentDTO dto) {
 
         // cria novo investimento
         InvestmentDTO novoInvestimento = investmentService.createInvestment(dto);
@@ -39,6 +47,8 @@ public class InvestmentController {
 
     // rota get para listar todos investimentos
     @GetMapping("/todos")
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Lista todos investimentos do sistema.")
     public ResponseEntity<List<InvestmentDTO>> listarTodosInvestimentos() {
         
         // cria investimento
@@ -50,7 +60,9 @@ public class InvestmentController {
 
     // rota get para listar investimentos de um investidor
     @GetMapping("/ativos/investidor")
-    public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorInvestidor(@PathVariable UUID investidor) {
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Lista todos investimentos do investidor.")
+    public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorInvestidor(@Parameter @PathVariable UUID investidor) {
 
         // busca investimentos do investidor
         List<InvestmentDTO> investimentosPorInvestidor = investmentService.buscaInvestimentosPorInvestidor(investidor);
@@ -61,7 +73,9 @@ public class InvestmentController {
 
     // rota get para listar ativo especifico
     @GetMapping("/ativos/{ativo}")
-    public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorAtivo(@Valid @PathVariable String ativo) {
+    @GetResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Lista todos os investimentos realizados em um determinado ativo.")
+    public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorAtivo(@Parameter @Valid @PathVariable String ativo) {
 
         // busca ativo
         List<InvestmentDTO> ativosEncontradosDTO = investmentService.buscaInvestimentosPorAtivo(ativo);
@@ -72,7 +86,9 @@ public class InvestmentController {
 
     // rota put para atualizar investimento
     @PutMapping("/update/{id}")
-    public ResponseEntity<InvestmentDTO> atualizarInvestimento(@PathVariable UUID id, @Valid @RequestBody InvestmentDTO dto) {
+    @PutResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Atualiza um investimento do investidor.")
+    public ResponseEntity<InvestmentDTO> atualizarInvestimento(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestmentDTO dto) {
 
         // atualiza investimento
         InvestmentDTO investidorAtualizado = investmentService.atualizarInvestimento(id, dto);
@@ -83,7 +99,9 @@ public class InvestmentController {
 
     // rota delete para deletar investimento
     @DeleteMapping("delete/{id}")
-    public ResponseEntity<String> deletarInvestimento(@PathVariable UUID id) {
+    @DeleteResponses // pacote de respostas http possiveis dentro dessa rota
+    @Operation(description = "Deleta um investimento do investidor.")
+    public ResponseEntity<String> deletarInvestimento(@Parameter @PathVariable UUID id) {
 
         // exclui investimento
        investmentService.excluirInvestimento(id);
