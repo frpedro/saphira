@@ -18,96 +18,73 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-// cria os construtores necessários
 @RequiredArgsConstructor
-
-// indica que a classe é controller e define a rota
 @RestController
-@RequestMapping("/investimentos")
+@RequestMapping("/investments")
 @Validated
-@Tag(name = "Investimentos")
+@Tag(name = "Investments", description = "Endpoints for managing investment data.")
 public class InvestmentController {
 
-    // referencia para service
-    @Autowired
     private final InvestmentService investmentService;
 
-    // rota post para criar novo investimento
     @PostMapping
-    @PostResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Cria um novo investimento para o investidor.")
-    public ResponseEntity<InvestmentDTO> criarInvestimento (@Parameter @Valid @RequestBody InvestmentDTO dto) {
+    @PostResponses
+    @Operation(summary = "Create a new investment", description = "Creates a new investment record.")
+    public ResponseEntity<InvestmentDTO> createInvestment(@Parameter @Valid @RequestBody InvestmentDTO dto) {
 
-        // cria novo investimento
-        InvestmentDTO novoInvestimento = investmentService.createInvestment(dto);
+        InvestmentDTO newInvestment = investmentService.createInvestment(dto);
 
-        // retorna o resultado
-        return new ResponseEntity<>(novoInvestimento, HttpStatus.CREATED);
+        return new ResponseEntity<>(newInvestment, HttpStatus.CREATED);
     }
 
-    // rota get para listar todos investimentos
-    @GetMapping("/todos")
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Lista todos investimentos do sistema.")
-    public ResponseEntity<List<InvestmentDTO>> listarTodosInvestimentos() {
-        
-        // cria investimento
-        List<InvestmentDTO> todosInvestimentosDTO = investmentService.listarTodosInvestimentos();
+    @GetMapping
+    @GetResponses
+    @Operation(summary = "List investments", description = "List all investments.")
+    public ResponseEntity<List<InvestmentDTO>> findAllInvestments() {
 
-        // retorna resultado
-        return new ResponseEntity<>(todosInvestimentosDTO, HttpStatus.OK);
+        List<InvestmentDTO> allInvestmentsDTO = investmentService.listAllInvestments();
+
+        return new ResponseEntity<>(allInvestmentsDTO, HttpStatus.OK);
     }
 
-    // rota get para listar investimentos de um investidor
-    @GetMapping("/ativos/investidor")
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Lista todos investimentos do investidor.")
-    public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorInvestidor(@Parameter @PathVariable UUID investidor) {
+    @GetMapping("/investor/{investor}")
+    @GetResponses
+    @Operation(summary = "Find investments by investor", description = "Lists all investments for a specific investor.")
+    public ResponseEntity<List<InvestmentDTO>> findInvestmentsByInvestor(@Parameter @PathVariable UUID investor) {
 
-        // busca investimentos do investidor
-        List<InvestmentDTO> investimentosPorInvestidor = investmentService.buscaInvestimentosPorInvestidor(investidor);
+        List<InvestmentDTO> investmentsByInvestor = investmentService.findInvestmentsByInvestor(investor);
 
-        // retorna resultado
-        return new ResponseEntity<>(investimentosPorInvestidor, HttpStatus.OK);
+        return new ResponseEntity<>(investmentsByInvestor, HttpStatus.OK);
     }
 
-    // rota get para listar ativo especifico
-    @GetMapping("/ativos/{ativo}")
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Lista todos os investimentos realizados em um determinado ativo.")
-    public ResponseEntity<List<InvestmentDTO>> buscaInvestimentosPorAtivo(@Parameter @Valid @PathVariable String ativo) {
+    @GetMapping("/assets/{asset}")
+    @GetResponses
+    @Operation(summary = "Find investments by asset", description = "Lists all investments for a specific asset.")
+    public ResponseEntity<List<InvestmentDTO>> findInvestmentsByAsset(@Parameter @Valid @PathVariable String asset) {
 
-        // busca ativo
-        List<InvestmentDTO> ativosEncontradosDTO = investmentService.buscaInvestimentosPorAtivo(ativo);
+        List<InvestmentDTO> investmentsDTO = investmentService.findInvestmentsByAsset(asset);
 
-        // retorna o resultado
-        return ResponseEntity.ok(ativosEncontradosDTO);
+        return ResponseEntity.ok(investmentsDTO);
     }
 
-    // rota put para atualizar investimento
-    @PutMapping("/update/{id}")
-    @PutResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Atualiza um investimento do investidor.")
-    public ResponseEntity<InvestmentDTO> atualizarInvestimento(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestmentDTO dto) {
+    @PutMapping("/{id}")
+    @PutResponses
+    @Operation(summary = "Update an investment", description = "Updates an existing investment by its ID.")
+    public ResponseEntity<InvestmentDTO> updateInvestment(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestmentDTO dto) {
 
-        // atualiza investimento
-        InvestmentDTO investidorAtualizado = investmentService.atualizarInvestimento(id, dto);
+        InvestmentDTO updatedInvestment = investmentService.updateInvestment(id, dto);
 
-        // retorna resultado
-        return ResponseEntity.ok(investidorAtualizado);
+        return ResponseEntity.ok(updatedInvestment);
     }
 
-    // rota delete para deletar investimento
-    @DeleteMapping("delete/{id}")
-    @DeleteResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Deleta um investimento do investidor.")
-    public ResponseEntity<String> deletarInvestimento(@Parameter @PathVariable UUID id) {
+    @DeleteMapping("/{id}")
+    @DeleteResponses
+    @Operation(summary = "Delete an investment", description = "Deletes an investment by its ID.")
+    public ResponseEntity<String> deleteInvestment(@Parameter @PathVariable UUID id) {
 
-        // exclui investimento
-       investmentService.excluirInvestimento(id);
+       investmentService.deleteInvestment(id);
 
-       // retorna resultado
-        return ResponseEntity.ok("Investimento exluido com sucesso");
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -15,16 +15,16 @@ import java.util.UUID;
 public class InvestmentDTO {
 
     @NotNull
-    @Schema(description = "UUID único referente a cada investidor.", example = "61ff10d1-d26c-460d-9d8d-1807a879d5c5")
+    @Schema(description = "Unique UUID referring to each investor.", example = "61ff10d1-d26c-460d-9d8d-1807a879d5c5")
     private UUID investorId;
 
     @NotBlank(message = "Ativo é um campo obrigatório")
-    @Schema(description = "Ação/investimento/ativo que foi adquirido pelo investidor.", example = "PETR4")
-    private String ativo;
+    @Schema(description = "Action/investment/asset was acquired by the investor.", example = "PETR4")
+    private String asset;
 
     @NotNull(message = "O valor aplicado é obrigatório")
     @Positive(message = "O valor aplicado deve ser maior que zero")
-    @Schema(description = "Quantia investida pelo investidor.", example = "2000.00")
-    private double valorAplicado;
+    @Schema(description = "Applied value by the investor.", example = "2000.00")
+    private double appliedValue;
 
 }

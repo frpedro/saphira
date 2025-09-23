@@ -9,18 +9,15 @@ import java.util.UUID;
 
 public interface InvestorRepository extends JpaRepository<Investor, UUID> {
 
-    // busca investidor por id
-    Optional<Investor> findById (UUID id);
+    Optional<Investor> findById(UUID id);
 
-    // busca investidor pelo nome
-    Optional<Investor> findByNome (String nome);
+    Optional<Investor> findByName(String name);
 
-    // busca investidor por tipo de perfil
-    List<Investor> findByPerfilInvestidor (Investor.PerfilInvestidor perfilInvestidor);
+    List<Investor> findByInvestorProfile(Investor.InvestorProfile investorProfile);
 
-    // busca apenas investidores qualificados
-    @Query("SELECT DISTINCT i.investidor FROM Investment i WHERE i.valorAplicado > :valor")
-    List<Investor> findByInvestidorQualificado (double valor);
+    // find only qualified investors
+    @Query("SELECT DISTINCT i.investor FROM Investment i WHERE i.appliedValue > :value")
+    List<Investor> findByQualifiedInvestor (double value);
 
     boolean existsByEmail(String email);
 }

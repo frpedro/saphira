@@ -11,14 +11,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// pacote com possiveis respostas http
-@Target({ElementType.METHOD, ElementType.TYPE} )
+// Simplifies API documentation by bundling common GET responses.
+@Target({ElementType.METHOD, ElementType.TYPE}  )
 @Retention(RetentionPolicy.RUNTIME)
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Recurso(s) encontrado(s) com sucesso."),
-        @ApiResponse(responseCode = "404", description = "Recurso não encontrado.",
+        @ApiResponse(responseCode = "200", description = "Resource(s) found successfully."),
+        @ApiResponse(responseCode = "404", description = "Resource not found.",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
-        @ApiResponse(responseCode = "500", description = "Ocorreu um erro inesperado no servidor.",
+        @ApiResponse(responseCode = "500", description = "An unexpected server error occurred.",
                 content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 })
 public @interface GetResponses {

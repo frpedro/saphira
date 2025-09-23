@@ -12,24 +12,24 @@ public class InvestorDTO {
 
     @NotBlank(message = "Nome é um campo obrigatório")
     @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]+$", message = "Nome só pode conter letras e espaços")
-    @Size(min = 3, max = 50, message = "Nome inválido")
-    @Schema(description = "Nome do investidor", example = "Pedro Fernandes")
-    private final String nome;
+    @Size(min = 3, max = 50, message = "O nome deve conter entre 3 e 50 caracteres")
+    @Schema(description = "Investor name", example = "Pedro Fernandes")
+    private final String name;
 
     @NotBlank(message = "Email é um campo obrigatório")
     @Email(message = "Formato de email inválido")
-    @Schema(description = "Email do investidor", example = "investidor@gmail.com")
+    @Schema(description = "Investor email", example = "investor@gmail.com")
     private final String email;
 
     @NotNull
-    @Schema(description = "Tipo de perfil do investidor: a forma que ele gostaria de investir - conservador, moderado ou arrojado",
+    @Schema(description = "Investor profile type: the way they would like to invest - conservador, moderado ou arrojado",
             example = "arrojado")
-    private final Investor.PerfilInvestidor perfilInvestidor;
+    private final Investor.InvestorProfile investorProfile;
 
     public InvestorDTO(Investor investor) {
-        this.nome = investor.getNome();
+        this.name = investor.getName();
         this.email = investor.getEmail();
-        this.perfilInvestidor = investor.getPerfilInvestidor();
+        this.investorProfile = investor.getInvestorProfile();
     }
 
 }

@@ -12,26 +12,26 @@ import org.springframework.http.ProblemDetail;
 @Configuration
 public class OpenAPIConfig {
 
-    // configura informações da documentação swagger
+    // main OpenAPI configuration bean
     @Bean
     public OpenAPI customOpenAPI( ) {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Software de gerenciamento de portfólio de investimentos com IA.")
+                        .title("Investment portfolio management platform with AI technology.")
                         .version("v1.0")
-                        .description("API para gerenciamento de investimentos e investidores.")
+                        .description("API for investment and investor management.")
                         .contact(new Contact()
                                 .name("Pedro Fernandes")
                                 .email("pedrofernandesctt@gmail.com")
-                                .url(""))
+                                .url("https://www.linkedin.com/in/pedrofernandesh/"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html" ))
                 );
     }
 
-    // informa ao springdoc para usar o schema "ProblemDetail"
-    // sempre que a classe ProblemDetail for encontrada.
+    // this static block instructs SpringDoc to use our custom schema
+    // whenever it encounters the ProblemDetail class.
     static {
         SpringDocUtils.getConfig( ).replaceWithClass(
                 ProblemDetail.class,
@@ -39,20 +39,22 @@ public class OpenAPIConfig {
         );
     }
 
-    // define como o ProblemDetail (mensagem de erro) deve ser documentado no Swagger/OpenAPI
+    // this interface defines how a ProblemDetail (standard error response)
+    // should be documented in Swagger/OpenAPI.
     @Schema(
             name = "ProblemDetail",
-            description = "Representação de um erro RFC 7807",
+            description = "An error representation following the RFC 7807 standard.",
             example = """
                   {
                     "type": "about:blank",
                     "title": "Not Found",
                     "status": 404,
-                    "detail": "Investidor com o ID 123e4567-e89b-12d3-a456-426614174000 não foi encontrado.",
-                    "instance": "/investidor/buscar/id/123e4567-e89b-12d3-a456-426614174000"
+                    "detail": "Investor with ID 123e4567-e89b-12d3-a456-426614174000 was not found.",
+                    "instance": "/investor/find/id/123e4567-e89b-12d3-a456-426614174000"
                   }
                   """
     )
+
     interface ProblemDetailSchema {}
 
 }

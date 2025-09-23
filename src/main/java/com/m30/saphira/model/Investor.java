@@ -10,29 +10,26 @@ import java.util.UUID;
 @Getter
 @Setter
 
-// table
 @Entity
 @Table(name = "investor")
 public class Investor {
 
-    // map
     @Id
     @GeneratedValue
     @Column
     private UUID id;
 
     @Column
-    private String nome;
+    private String name;
 
     @Column
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "perfil_investidor")
-    private PerfilInvestidor perfilInvestidor;
+    @Column(name = "investor_profile")
+    private InvestorProfile investorProfile;
 
-    // check
-    public enum PerfilInvestidor {
+    public enum InvestorProfile {
         conservador,
         moderado,
         arrojado

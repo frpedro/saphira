@@ -7,12 +7,8 @@ import java.util.UUID;
 
 public interface InvestmentRepository extends JpaRepository<Investment, UUID> {
 
-    // busca investimentos de um investidor
-    List<Investment> findByInvestidor_Id(UUID investidor);
+    List<Investment> findByInvestor_Id(UUID investor);
 
-    // busca investimentos por ativo
-    List<Investment> findByAtivo(String ativo);
-
-
+    List<Investment> findByAsset(String asset);
 
 }

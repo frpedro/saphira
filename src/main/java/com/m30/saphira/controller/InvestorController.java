@@ -17,108 +17,88 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-
-// cria os construtores necessários
 @RequiredArgsConstructor
-
-// indica que a classe é controller e define rota
 @RestController
-@RequestMapping("/investidor")
-@Tag(name = "Investidores")
+@RequestMapping("/investors" )
+@Tag(name = "Investors", description = "Endpoints for managing investor data.")
 public class InvestorController {
 
-    // referencia para service
     private final InvestorService investorService;
 
-    // rota post para criar novo investidor
     @PostMapping
-    @PostResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Cria um novo investidor")
-    public ResponseEntity<InvestorDTO> criarInvestidor(@Parameter @Valid @RequestBody InvestorDTO dto) {
-
-        // cria novo investidor
-        InvestorDTO novoInvestidor = investorService.criarInvestidor(dto.getPerfilInvestidor(), dto);
-
-        // retorna o resultado
-        return new ResponseEntity<>(novoInvestidor, HttpStatus.CREATED);
+    @PostResponses
+    @Operation(
+            summary = "Create a new investor",
+            description = "Registers a new investor in the system. The email provided must be unique."
+    )
+    public ResponseEntity<InvestorDTO> createInvestor(@Parameter @Valid @RequestBody InvestorDTO dto) {
+        InvestorDTO newInvestor = investorService.createInvestor(dto.getInvestorProfile(), dto);
+        return new ResponseEntity<>(newInvestor, HttpStatus.CREATED);
     }
 
-    // rota get para listar todos investidores
     @GetMapping
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Lista todos investidores do sistema")
-    public ResponseEntity<List<InvestorDTO>> listarTodosInvestidores() {
-
-        // lista todos investidores
-        List<InvestorDTO> todosInvestidores = investorService.listarTodosInvestidores();
-
-        // retorna o resultado
-        return new ResponseEntity<>(todosInvestidores, HttpStatus.OK);
+    @GetResponses
+    @Operation(
+            summary = "List all investors",
+            description = "Retrieves a complete list of all investors currently registered in the system."
+    )
+    public ResponseEntity<List<InvestorDTO>> listAllInvestors() {
+        List<InvestorDTO> allInvestors = investorService.findAllInvestors();
+        return new ResponseEntity<>(allInvestors, HttpStatus.OK);
     }
 
-    // rota get para procurar investidor especifico por id
-    @GetMapping("/buscar/id/{id}")
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Busca investidor por ID")
-    public ResponseEntity<InvestorDTO> procurarInvestidorId(@Parameter @Valid @PathVariable UUID id) {
-
-        // busca investidor
-        InvestorDTO investidorEncontrado = investorService.listarInvestidorPorId(id);
-
-        // retorna resultado
-        return ResponseEntity.ok(investidorEncontrado);
+    @GetMapping("/{id}")
+    @GetResponses
+    @Operation(
+            summary = "Find an investor by ID",
+            description = "Retrieves the details of a single investor using their unique UUID as the identifier."
+    )
+    public ResponseEntity<InvestorDTO> findInvestorById(@Parameter @Valid @PathVariable UUID id) {
+        InvestorDTO investor = investorService.findInvestorsById(id);
+        return ResponseEntity.ok(investor);
     }
 
-    // rota get para procurar investidor especifico por nome
-    @GetMapping("/buscar/nome/{nome}")
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Busca investidor por nome")
-    public ResponseEntity<InvestorDTO> procurarInvestidorPorNome(@Parameter @Valid @PathVariable String nome) {
-
-        // busca investidor
-        InvestorDTO investidorEncontrado = investorService.listarInvestidorPorNome(nome);
-
-        // retorna resultado
-        return ResponseEntity.ok(investidorEncontrado);
+    @GetMapping("/name/{name}")
+    @GetResponses
+    @Operation(
+            summary = "Find an investor by name",
+            description = "Searches for and retrieves an investor by their full name. The search is case-sensitive."
+    )
+    public ResponseEntity<InvestorDTO> findInvestorByName(@Parameter @Valid @PathVariable String name) {
+        InvestorDTO investor = investorService.findInvestorsByName(name);
+        return ResponseEntity.ok(investor);
     }
 
-    // rota get para procurar investidores especificos por perfil
-    @GetMapping("/buscar/perfil/{perfil}")
-    @GetResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Lista investidores por tipo de perfil de investidor")
-    public ResponseEntity<List<InvestorDTO>> procurarInvestidorPerfil(@Parameter @Valid @PathVariable Investor.PerfilInvestidor perfil) {
-
-        // busca investidores
-        List<InvestorDTO> investidoresEncontrados = investorService.listarInvestidoresPorPefil(perfil);
-
-        // retorna resultado
-        return ResponseEntity.ok(investidoresEncontrados);
+    @GetMapping("/profile/{profile}")
+    @GetResponses
+    @Operation(
+            summary = "List investors by profile",
+            description = "Retrieves a list of all investors that match a specific investment profile (e.g., CONSERVADOR, MODERADO, ARROJADO)."
+    )
+    public ResponseEntity<List<InvestorDTO>> findInvestorByProfile(@Parameter @Valid @PathVariable Investor.InvestorProfile profile) {
+        List<InvestorDTO> investors = investorService.findInvestorByProfile(profile);
+        return ResponseEntity.ok(investors);
     }
 
-    // rota put para atualizar dados de um investidor
-    @PutMapping("/atualizar/{id}")
-    @PutResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Atualiza um investidor")
-    public ResponseEntity<InvestorDTO> atualizarInvestidor(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestorDTO investorDTO) {
-
-        // atualiza dados
-        InvestorDTO investidorAtualizado = investorService.atualizarInvestidor(id, investorDTO);
-
-        // retorna resultado
-        return ResponseEntity.ok(investidorAtualizado);
+    @PutMapping("/{id}")
+    @PutResponses
+    @Operation(
+            summary = "Update an investor",
+            description = "Updates the information of an existing investor, identified by their UUID. If the email is changed, it must remain unique in the system."
+    )
+    public ResponseEntity<InvestorDTO> updateInvestor(@Parameter @PathVariable UUID id, @Valid @RequestBody InvestorDTO investorDTO) {
+        InvestorDTO updatedInvestor = investorService.updateInvestor(id, investorDTO);
+        return ResponseEntity.ok(updatedInvestor);
     }
 
-    // rota delete para deletar um investidor
-    @DeleteMapping("/deletar/{id}")
-    @DeleteResponses // pacote de respostas http possiveis dentro dessa rota
-    @Operation(description = "Deleta um investidor")
-    public ResponseEntity<String> deletarInvestidor(@Parameter @Valid @PathVariable UUID id) {
-
-        // exclui investidor
-        investorService.excluirInvestidor(id);
-
-        // retorna resultado com mensagem
-        return ResponseEntity.ok("Investidor excluido com sucesso");
+    @DeleteMapping("/{id}")
+    @DeleteResponses
+    @Operation(
+            summary = "Delete an investor",
+            description = "Permanently deletes an investor from the system using their UUID. This action cannot be undone."
+    )
+    public ResponseEntity<String> deleteInvestor(@Parameter @Valid @PathVariable UUID id) {
+        investorService.deleteInvestor(id);
+        return ResponseEntity.noContent().build();
     }
-
 }

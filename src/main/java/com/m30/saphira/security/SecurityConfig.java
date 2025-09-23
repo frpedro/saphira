@@ -10,15 +10,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Permite acesso a TODAS as rotas sem autenticação temporáriamente
+    // Allow access to all endpoints without authentication (temporarily).
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http ) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permite acesso a TODAS as rotas sem autenticação
                         .anyRequest( ).permitAll()
                 )
-                // Desativa o CSRF (Cross-Site Request Forgery).
+                // CSRF Disable (Cross-Site Request Forgery).
                 .csrf(csrf -> csrf.disable());
 
         return http.build( );
