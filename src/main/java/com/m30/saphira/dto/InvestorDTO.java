@@ -32,4 +32,6 @@ public class InvestorDTO {
         this.investorProfile = investor.getInvestorProfile();
     }
 
+
+
 }
