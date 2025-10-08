@@ -1,6 +1,7 @@
 package com.m30.saphira;
 import com.m30.saphira.dto.InvestorDTO;
 import com.m30.saphira.exception.DataConflictException;
+import com.m30.saphira.exception.ResourceNotFoundException;
 import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestorRepository;
 import com.m30.saphira.service.InvestorService;
@@ -9,12 +10,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,21 +34,26 @@ public class InvestorServiceTest {
 
     private InvestorDTO investorDto;
     private Investor investor;
+    private UUID investorId;
 
     // defines a standard configuration for testing
     @BeforeEach
     void setUp() {
 
+        investorId = UUID.fromString("8a8a8a8a-8a8a-8a8a-8a8a-8a8a8a8a8a8a");
+
         investorDto = new InvestorDTO("Pedro Fernandes", "pedro.fernandes@email.com", Investor.InvestorProfile.arrojado);
 
         investor = new Investor();
+
+        investor.setId(investorId);
         investor.setName(investorDto.getName());
         investor.setEmail(investorDto.getEmail());
         investor.setInvestorProfile(investorDto.getInvestorProfile());
     }
 
     @Nested
-    @DisplayName("Investor creation tests")
+    @DisplayName("CREATE: Investor creation tests")
     class createInvestorTests {
 
         @Test
@@ -80,7 +89,7 @@ public class InvestorServiceTest {
     }
 
     @Nested
-    @DisplayName("Investor search tests")
+    @DisplayName("READ: Investor search tests")
     class FindInvestorsTests {
 
         @Test
@@ -113,6 +122,113 @@ public class InvestorServiceTest {
 
             verify(investorRepository, times(1)).findAll();
         }
+
+        @Test
+        @DisplayName("Should return a list of investors by profile")
+        void shouldReturnInvestorsListByProfile() {
+
+            Investor.InvestorProfile profile = Investor.InvestorProfile.arrojado;
+
+            when(investorRepository.findByInvestorProfile(profile))
+                    .thenReturn(Collections.singletonList(investor));
+
+            List<InvestorDTO> result = investorService.findInvestorByProfile(profile);
+
+            assertNotNull(result);
+            assertFalse(result.isEmpty());
+
+            assertEquals(1, result.size());
+
+            assertEquals(investor.getInvestorProfile(), result.get(0).getInvestorProfile());
+
+            verify(investorRepository, times(1)).findByInvestorProfile(profile);
+        }
+
+        @Test
+        @DisplayName("Should return empty list when no investors by profile exist")
+        void shouldReturnEmptyList_whenNoInvestorsByProfileExist() {
+
+            Investor.InvestorProfile profile = Investor.InvestorProfile.arrojado;
+
+            when(investorRepository.findByInvestorProfile(profile)).thenReturn(Collections.emptyList());
+
+            List<InvestorDTO> result = investorService.findInvestorByProfile(profile);
+
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+
+            verify(investorRepository, times(1)).findByInvestorProfile(profile);
+        }
+
+        @Test
+        @DisplayName("Should return a investor by ID")
+        void shouldReturnInvestorById() {
+
+            when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
+
+            InvestorDTO result = investorService.findInvestorsById(investorId);
+
+            assertNotNull(result);
+
+            assertEquals("Pedro Fernandes", result.getName(), "O nome do investidor não corresponde.");
+
+            verify(investorRepository, times(1)).findById(investorId);
+
+        }
+
+        @Test
+        @DisplayName("Should throw ReturnResourceNotFoundException when investor by ID not found")
+        void shouldThrowResourceNotFoundException_whenInvestorByIdNotFound() {
+
+            UUID id = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
+
+            when(investorRepository.findById(id)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> {
+                investorService.findInvestorsById(id);
+            });
+
+            verify(investorRepository, times(1)).findById(id);
+
+        }
+
+        @Test
+        @DisplayName("Should return a investor by name")
+        void shouldReturnInvestorByName() {
+
+            when(investorRepository.findByName(investor.getName())).thenReturn(Optional.of(investor));
+
+            InvestorDTO result = investorService.findInvestorsByName(investor.getName());
+
+            assertNotNull(result);
+            assertEquals(investor.getName(), result.getName());
+
+            verify(investorRepository, times(1)).findByName(investor.getName());
+        }
+    }
+
+    @Nested
+    @DisplayName("UPDATE: Investor update test")
+    class UpdateInvestorTests {
+
+        @Test
+        @DisplayName("Should update investor by ID")
+        void shouldUpdateInvestorByID() {
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("DELETE: Investor delete test")
+    class DeleteInvestorTests {
+
+        @Test
+        @DisplayName("Should update investor by ID")
+        void shouldCreateInvestorByID() {
+
+        }
+
     }
 
 }
