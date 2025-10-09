@@ -180,15 +180,15 @@ public class InvestorServiceTest {
         @DisplayName("Should throw ReturnResourceNotFoundException when investor by ID not found")
         void shouldThrowResourceNotFoundException_whenInvestorByIdNotFound() {
 
-            UUID id = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
+            UUID nonExistentId = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
 
-            when(investorRepository.findById(id)).thenReturn(Optional.empty());
+            when(investorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
             assertThrows(ResourceNotFoundException.class, () -> {
-                investorService.findInvestorsById(id);
+                investorService.findInvestorsById(nonExistentId);
             });
 
-            verify(investorRepository, times(1)).findById(id);
+            verify(investorRepository, times(1)).findById(nonExistentId);
 
         }
 
@@ -208,27 +208,101 @@ public class InvestorServiceTest {
     }
 
     @Nested
-    @DisplayName("UPDATE: Investor update test")
+    @DisplayName("UPDATE: Investor update tests")
     class UpdateInvestorTests {
 
         @Test
         @DisplayName("Should update investor by ID")
         void shouldUpdateInvestorByID() {
 
+            when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
+
+            when(investorRepository.save(any(Investor.class))).thenReturn(investor);
+
+            InvestorDTO result = investorService.updateInvestor(investorId, investorDto);
+
+            verify(investorRepository, times(1)).findById(investorId);
+            verify(investorRepository, times(1)).save(any(Investor.class));
+
+            assertNotNull(result);
+            assertEquals(investor.getName(), result.getName());
+            assertEquals(investor.getEmail(), result.getEmail());
+
         }
 
+        @Test
+        @DisplayName("Should throw ResourceNotFoundException when trying update investor by ID not found")
+        void shouldThrowResourceNotFoundException_whenInvestorNotFound() {
+
+            UUID nonExistentId = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
+
+            when(investorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> {
+                investorService.updateInvestor(nonExistentId, investorDto);
+            });
+
+            verify(investorRepository, times(1)).findById(nonExistentId);
+            verify(investorRepository, never()).save(any(Investor.class));
+
+        }
+
+        @Test
+        @DisplayName("Should throw a DataConflictException when updating a new investor with an email already in use")
+        void shouldThrowDataConflictException_whenEmailIsAlreadyInUse() {
+
+            Investor existingInvestor = new Investor();
+            existingInvestor.setEmail("email.antigo@example.com");
+
+            when(investorRepository.findById(investorId)).thenReturn(Optional.of(existingInvestor));
+
+            when(investorRepository.existsByEmail(investorDto.getEmail())).thenReturn(true);
+
+            DataConflictException thrownException = assertThrows(DataConflictException.class, () ->
+                    investorService.updateInvestor(investorId, investorDto));
+
+            verify(investorRepository, never()).save(any(Investor.class));
+            verify(investorRepository, times(1)).findById(investorId);
+            verify(investorRepository, times(1)).existsByEmail(investorDto.getEmail());
+
+        }
     }
 
     @Nested
-    @DisplayName("DELETE: Investor delete test")
+    @DisplayName("DELETE: Investor delete tests")
     class DeleteInvestorTests {
 
         @Test
-        @DisplayName("Should update investor by ID")
-        void shouldCreateInvestorByID() {
+        @DisplayName("Should delete investor by ID")
+        void shouldDeleteInvestorByID() {
+
+            when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
+
+            doNothing().when(investorRepository).delete(any(Investor.class));
+
+            investorService.deleteInvestor(investorId);
+
+            verify(investorRepository, times(1)).findById(investorId);
+            verify(investorRepository, times(1)).delete(investor);
 
         }
 
+        @Test
+        @DisplayName("Should throw ResourceNotFoundException when trying delete investor by ID not found")
+        void shouldThrowResourceNotFoundException_whenInvestorNotFound() {
+
+            UUID nonExistentId = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
+
+            when(investorRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> {
+                investorService.deleteInvestor(nonExistentId);
+            });
+
+            verify(investorRepository, times(1)).findById(nonExistentId);
+            verify(investorRepository, never()).delete(any(Investor.class));
+
+        }
     }
 
 }
