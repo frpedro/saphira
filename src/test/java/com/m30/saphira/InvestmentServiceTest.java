@@ -1,13 +1,11 @@
 package com.m30.saphira;
 import com.m30.saphira.dto.InvestmentDTO;
 import com.m30.saphira.model.Investment;
+import com.m30.saphira.model.Investor;
 import com.m30.saphira.repository.InvestmentRepository;
 import com.m30.saphira.repository.InvestorRepository;
 import com.m30.saphira.service.InvestmentService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -35,17 +33,22 @@ public class InvestmentServiceTest {
     private InvestmentDTO investmentDTO;
     private Investment investment;
     private UUID investorId;
+    private Investor investor;
 
     @BeforeEach
     void setUp() {
 
         investorId = UUID.fromString("8a8a8a8a-8a8a-8a8a-8a8a-8a8a8a8a8a8a");
 
+        investor = new Investor();
+        investor.setId(investorId);
+
         investmentDTO = new InvestmentDTO(investorId, "MRFX-11", 150.00);
 
-        investmentDTO.setInvestorId(investorId);
-        investmentDTO.setAsset(investmentDTO.getAsset());
-        investmentDTO.setAppliedValue(investmentDTO.getAppliedValue());
+        investment = new Investment();
+        investment.setInvestor(investor);
+        investment.setAsset(investmentDTO.getAsset());
+        investment.setAppliedValue(investmentDTO.getAppliedValue());
 
     }
 
@@ -57,14 +60,19 @@ public class InvestmentServiceTest {
         @DisplayName("Should create a investment when ID was found")
         void shouldCreateNewInvestment_whenInvestorWasFound() {
 
-            // when(investorRepository.findById(investorId).(Optional.of());
-
-            // when(investmentRepository.save(any(Investment.class))).thenAnswer();
+            // arrange
+            when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
+            when(investmentRepository.save(any(Investment.class))).thenReturn(investment);
 
             // act
             InvestmentDTO result = investmentService.createInvestment(investmentDTO);
 
+            // assert
+            Assertions.assertEquals(result.getAsset(), investmentDTO.getAsset());
+            Assertions.assertEquals(result.getAppliedValue(), investmentDTO.getAppliedValue());
 
+            verify(investorRepository, times(1)).findById(investorId);
+            verify(investmentRepository, times(1)).save(any(Investment.class));
 
         }
 
