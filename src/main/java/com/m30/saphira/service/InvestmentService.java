@@ -25,7 +25,7 @@ public class InvestmentService {
     public InvestmentDTO createInvestment(InvestmentDTO dto) {
 
         // busca investidor pelo nome e lança exeção se não existir
-        Investor investidor = investorRepository.findById(dto.getInvestorId())
+        Investor investor = investorRepository.findById(dto.getInvestorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Investidor " + dto.getInvestorId() + " não encontrado."));
 
         // cria um novo objeto de investimento
@@ -35,13 +35,13 @@ public class InvestmentService {
         investment.setAsset(dto.getAsset());
         investment.setAppliedValue(dto.getAppliedValue());
         investment.setApplicationDate(LocalDateTime.now());
-        investment.setInvestor(investidor);
+        investment.setInvestor(investor);
 
         // persiste / salva no banco de dados
         investmentRepository.save(investment);
 
         // retorna resultado da criação
-        return new InvestmentDTO(investidor.getId(), dto.getAsset(), dto.getAppliedValue());
+        return new InvestmentDTO(investor.getId(), dto.getAsset(), dto.getAppliedValue());
 
     }
 
@@ -65,11 +65,11 @@ public class InvestmentService {
     }
 
     // lista investimentos filtrados por investidor
-    public List<InvestmentDTO> findInvestmentsByInvestor(UUID investidor) {
+    public List<InvestmentDTO> findInvestmentsByInvestor(UUID investor) {
 
-        List<Investment> investimentosDoInvestidor = investmentRepository.findByInvestor_Id(investidor);
+        List<Investment> investimentsByInvestor = investmentRepository.findByInvestor_Id(investor);
 
-        return investimentosDoInvestidor.stream()
+        return investimentsByInvestor.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

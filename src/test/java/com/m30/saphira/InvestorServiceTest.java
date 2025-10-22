@@ -54,7 +54,7 @@ public class InvestorServiceTest {
 
     @Nested
     @DisplayName("CREATE: Investor creation tests")
-    class createInvestorTests {
+    class CreateInvestorTests {
 
         @Test
         @DisplayName("Should create a new investor when email is not in use.")
@@ -70,12 +70,12 @@ public class InvestorServiceTest {
             assertEquals(result.getName(), investorDto.getName());
             assertEquals(result.getEmail(), investorDto.getEmail());
 
-            verify(investorRepository).existsByEmail(investorDto.getEmail());
+            verify(investorRepository, times(1)).existsByEmail(investorDto.getEmail());
             verify(investorRepository).save(any(Investor.class));
         }
 
         @Test
-        @DisplayName("Should throw a DataConflictException when creating a new investor with an email already in use")
+        @DisplayName("Should throw a DataConflictException when creating a new investor with an email already in use.")
         void shouldThrowDataConflictException_whenEmailIsAlreadyInUse() {
 
             when(investorRepository.existsByEmail(investorDto.getEmail())).thenReturn(true);
@@ -93,11 +93,11 @@ public class InvestorServiceTest {
     class FindInvestorsTests {
 
         @Test
-        @DisplayName("Should return all investors")
+        @DisplayName("Should return all investors.")
         void shouldReturnAllInvestors() {
 
-            List<Investor> mockInvestor = List.of(investor);
-            when(investorRepository.findAll()).thenReturn(mockInvestor);
+            List<Investor> mockInvestors = List.of(investor);
+            when(investorRepository.findAll()).thenReturn(mockInvestors);
 
             List<InvestorDTO> result = investorService.findAllInvestors();
 
@@ -106,11 +106,10 @@ public class InvestorServiceTest {
             assertEquals(investor.getName(), result.get(0).getName());
 
             verify(investorRepository, times(1)).findAll();
-
         }
 
         @Test
-        @DisplayName("Should return empty list when no investors exist")
+        @DisplayName("Should return empty list when no investors exist.")
         void shouldReturnEmptyList_whenNoInvestorsExist() {
 
             when(investorRepository.findAll()).thenReturn(Collections.emptyList());
@@ -124,7 +123,7 @@ public class InvestorServiceTest {
         }
 
         @Test
-        @DisplayName("Should return a list of investors by profile")
+        @DisplayName("Should return a list of investors by profile.")
         void shouldReturnInvestorsListByProfile() {
 
             Investor.InvestorProfile profile = Investor.InvestorProfile.arrojado;
@@ -145,7 +144,7 @@ public class InvestorServiceTest {
         }
 
         @Test
-        @DisplayName("Should return empty list when no investors by profile exist")
+        @DisplayName("Should return empty list when no investors by profile exist.")
         void shouldReturnEmptyList_whenNoInvestorsByProfileExist() {
 
             Investor.InvestorProfile profile = Investor.InvestorProfile.arrojado;
@@ -161,7 +160,7 @@ public class InvestorServiceTest {
         }
 
         @Test
-        @DisplayName("Should return a investor by ID")
+        @DisplayName("Should return a investor by ID.")
         void shouldReturnInvestorById() {
 
             when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
@@ -173,11 +172,10 @@ public class InvestorServiceTest {
             assertEquals("Pedro Fernandes", result.getName(), "O nome do investidor não corresponde.");
 
             verify(investorRepository, times(1)).findById(investorId);
-
         }
 
         @Test
-        @DisplayName("Should throw ReturnResourceNotFoundException when investor by ID not found")
+        @DisplayName("Should throw ReturnResourceNotFoundException when investor by ID not found.")
         void shouldThrowResourceNotFoundException_whenInvestorByIdNotFound() {
 
             UUID nonExistentId = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
@@ -189,11 +187,10 @@ public class InvestorServiceTest {
             });
 
             verify(investorRepository, times(1)).findById(nonExistentId);
-
         }
 
         @Test
-        @DisplayName("Should return a investor by name")
+        @DisplayName("Should return a investor by name.")
         void shouldReturnInvestorByName() {
 
             when(investorRepository.findByName(investor.getName())).thenReturn(Optional.of(investor));
@@ -212,7 +209,7 @@ public class InvestorServiceTest {
     class UpdateInvestorTests {
 
         @Test
-        @DisplayName("Should update investor by ID")
+        @DisplayName("Should update investor by ID.")
         void shouldUpdateInvestorByID() {
 
             when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
@@ -227,11 +224,10 @@ public class InvestorServiceTest {
             assertNotNull(result);
             assertEquals(investor.getName(), result.getName());
             assertEquals(investor.getEmail(), result.getEmail());
-
         }
 
         @Test
-        @DisplayName("Should throw ResourceNotFoundException when trying update investor by ID not found")
+        @DisplayName("Should throw ResourceNotFoundException when trying update investor by ID not found.")
         void shouldThrowResourceNotFoundException_whenInvestorNotFound() {
 
             UUID nonExistentId = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
@@ -244,11 +240,10 @@ public class InvestorServiceTest {
 
             verify(investorRepository, times(1)).findById(nonExistentId);
             verify(investorRepository, never()).save(any(Investor.class));
-
         }
 
         @Test
-        @DisplayName("Should throw a DataConflictException when updating a new investor with an email already in use")
+        @DisplayName("Should throw a DataConflictException when updating a new investor with an email already in use.")
         void shouldThrowDataConflictException_whenEmailIsAlreadyInUse() {
 
             Investor existingInvestor = new Investor();
@@ -264,7 +259,6 @@ public class InvestorServiceTest {
             verify(investorRepository, never()).save(any(Investor.class));
             verify(investorRepository, times(1)).findById(investorId);
             verify(investorRepository, times(1)).existsByEmail(investorDto.getEmail());
-
         }
     }
 
@@ -273,7 +267,7 @@ public class InvestorServiceTest {
     class DeleteInvestorTests {
 
         @Test
-        @DisplayName("Should delete investor by ID")
+        @DisplayName("Should delete investor by ID.")
         void shouldDeleteInvestorByID() {
 
             when(investorRepository.findById(investorId)).thenReturn(Optional.of(investor));
@@ -284,11 +278,10 @@ public class InvestorServiceTest {
 
             verify(investorRepository, times(1)).findById(investorId);
             verify(investorRepository, times(1)).delete(investor);
-
         }
 
         @Test
-        @DisplayName("Should throw ResourceNotFoundException when trying delete investor by ID not found")
+        @DisplayName("Should throw ResourceNotFoundException when trying delete investor by ID not found.")
         void shouldThrowResourceNotFoundException_whenInvestorNotFound() {
 
             UUID nonExistentId = UUID.fromString("1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b");
@@ -301,7 +294,6 @@ public class InvestorServiceTest {
 
             verify(investorRepository, times(1)).findById(nonExistentId);
             verify(investorRepository, never()).delete(any(Investor.class));
-
         }
     }
 
