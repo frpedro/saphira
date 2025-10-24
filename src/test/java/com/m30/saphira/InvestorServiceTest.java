@@ -97,7 +97,6 @@ public class InvestorServiceTest {
             assertEquals(investor.getName(), result.get(0).getName());
 
             verify(investorRepository, times(1)).findAll();
-
         }
 
         @Test

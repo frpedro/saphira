@@ -17,45 +17,36 @@ import java.util.stream.Collectors;
 @Service
 public class InvestmentService {
 
-    // referência para os repositórios
     private final InvestmentRepository investmentRepository;
     private final InvestorRepository investorRepository;
 
-    // cria um novo investimento
     public InvestmentDTO createInvestment(InvestmentDTO dto) {
 
-        // busca investidor pelo nome e lança exeção se não existir
-        Investor investidor = investorRepository.findById(dto.getInvestorId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Investidor " + dto.getInvestorId() + " não encontrado."));
+        Investor investor = investorRepository.findById(dto.getInvestorId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Investor with ID: " + dto.getInvestorId() + " not found"));
 
-        // cria um novo objeto de investimento
         Investment investment = new Investment();
 
-        //preenche os dados
         investment.setAsset(dto.getAsset());
         investment.setAppliedValue(dto.getAppliedValue());
         investment.setApplicationDate(LocalDateTime.now());
-        investment.setInvestor(investidor);
+        investment.setInvestor(investor);
 
-        // persiste / salva no banco de dados
         investmentRepository.save(investment);
 
-        // retorna resultado da criação
-        return new InvestmentDTO(investidor.getId(), dto.getAsset(), dto.getAppliedValue());
+        return new InvestmentDTO(investor.getId(), dto.getAsset(), dto.getAppliedValue());
 
     }
 
-    // lista todos investimentos
     public List<InvestmentDTO> listAllInvestments() {
 
-        List<Investment> todosInvestimentos = investmentRepository.findAll();
+        List<Investment> allInvestments = investmentRepository.findAll();
 
-        return todosInvestimentos.stream()
+        return allInvestments.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         }
 
-    // converte model da classe acima para dto
     private InvestmentDTO convertToDTO(Investment investment) {
         return new InvestmentDTO(
                 investment.getInvestor().getId(),
@@ -64,59 +55,48 @@ public class InvestmentService {
         );
     }
 
-    // lista investimentos filtrados por investidor
-    public List<InvestmentDTO> findInvestmentsByInvestor(UUID investidor) {
+    public List<InvestmentDTO> findInvestmentsByInvestor(UUID investor) {
 
-        List<Investment> investimentosDoInvestidor = investmentRepository.findByInvestor_Id(investidor);
+        List<Investment> investmentsByInvestor = investmentRepository.findByInvestor_Id(investor);
 
-        return investimentosDoInvestidor.stream()
+        return investmentsByInvestor.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    // busca investimento por ativo
-    public List<InvestmentDTO> findInvestmentsByAsset(String ativo) {
+    public List<InvestmentDTO> findInvestmentsByAsset(String asset) {
 
-        List<Investment> investidoresPorAtivo = investmentRepository.findByAsset(ativo);
+        List<Investment> investorsByAsset = investmentRepository.findByAsset(asset);
 
-        return investidoresPorAtivo.stream()
+        return investorsByAsset.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    // atualiza investimento
     public InvestmentDTO updateInvestment(UUID id, InvestmentDTO investmentDTO) {
 
-        // valida se existe
-        Investment investimentoExistente = investmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Investimento " + id + " não encontrado."));
+        Investment existingInvestment = investmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Investment with ID: " + id + " not found."));
 
-        // seta novos dados atualizados
-        investimentoExistente.setAsset(investmentDTO.getAsset());
-        investimentoExistente.setAppliedValue(investmentDTO.getAppliedValue());
-        investimentoExistente.setApplicationDate(LocalDateTime.now());
+        existingInvestment.setAsset(investmentDTO.getAsset());
+        existingInvestment.setAppliedValue(investmentDTO.getAppliedValue());
+        existingInvestment.setApplicationDate(LocalDateTime.now());
 
-        // salva objeto atualizado no banco
-        Investment investimentoAtualizado = investmentRepository.save(investimentoExistente);
+        Investment updatedInvestment = investmentRepository.save(existingInvestment);
 
-        // retorna resultado da atualização
         return new InvestmentDTO(
-                investimentoAtualizado.getInvestor().getId(),
-                investimentoAtualizado.getAsset(),
-                investimentoAtualizado.getAppliedValue()
+                updatedInvestment.getInvestor().getId(),
+                updatedInvestment.getAsset(),
+                updatedInvestment.getAppliedValue()
         );
     }
 
-    // exclui investimento
     public void deleteInvestment(UUID id) {
 
-        // valida se existe
-        Investment investimento = investmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Investimento " + id + " não encontrado."));
+        Investment investment = investmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Investment with ID: " + id + " not found."));
 
-        // deleta do banco
         investmentRepository.deleteById(id);
     }
-
 }
 
